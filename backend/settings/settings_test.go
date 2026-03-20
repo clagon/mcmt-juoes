@@ -56,8 +56,8 @@ func TestUpdateSettings(t *testing.T) {
 	e := echo.New()
 
 	newSettings := settings.Settings{
-		JavaXms: "3G",
-		JavaXmx: "6G",
+		JavaXms:  "3G",
+		JavaXmx:  "6G",
 		JavaArgs: "-Dfoo=bar",
 	}
 
