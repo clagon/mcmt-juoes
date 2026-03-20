@@ -43,7 +43,7 @@ func GetManager() *Manager {
 
 func (m *Manager) Status() ServerStatus {
 	m.mu.Lock()
-	defer m.mu.Lock()
+	defer m.mu.Unlock()
 	return m.status
 }
 
