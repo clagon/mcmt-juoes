@@ -62,3 +62,5 @@ https://svelte.dev/e/legacy_reactive_statement_invalid
 6:08:18 PM [vite] (ssr) page reload src/lib/components/Management.svelte
 6:08:33 PM [vite] (client) hmr update /src/lib/components/Management.svelte, /src/app.css
 6:08:33 PM [vite] (ssr) page reload src/lib/components/Management.svelte
+6:57:46 PM [vite] (client) hmr update /src/lib/components/Terminal.svelte, /src/app.css
+6:57:46 PM [vite] (ssr) page reload src/lib/components/Terminal.svelte

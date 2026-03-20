@@ -11,8 +11,12 @@ import (
 	"sync"
 	"time"
 
+	"bufio"
+
 	"github.com/user/server-manager/config"
 	"github.com/user/server-manager/database"
+	"github.com/user/server-manager/state"
+	"github.com/user/server-manager/ws"
 )
 
 type ServerStatus string
@@ -51,6 +55,7 @@ func (m *Manager) setStatus(s ServerStatus) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.status = s
+	state.SetServerStatus(string(s))
 }
 
 func (m *Manager) Start() error {
@@ -92,16 +97,43 @@ func (m *Manager) Start() error {
 	}
 	m.stdin = stdin
 
-	// For stdout, we'll let Minecraft write to logs/latest.log and tail it separately
-	// or we can just pipe stdout to /dev/null if we only rely on the log file.
-	// For now, let's keep stdout/stderr going to standard out so backend console sees it.
-	m.cmd.Stdout = os.Stdout
-	m.cmd.Stderr = os.Stderr
+	stdoutPipe, err := m.cmd.StdoutPipe()
+	if err != nil {
+		m.setStatus(StatusStopped)
+		return err
+	}
+
+	stderrPipe, err := m.cmd.StderrPipe()
+	if err != nil {
+		m.setStatus(StatusStopped)
+		return err
+	}
 
 	if err := m.cmd.Start(); err != nil {
 		m.setStatus(StatusStopped)
 		return err
 	}
+
+	// Stream stdout
+	go func() {
+		scanner := bufio.NewScanner(stdoutPipe)
+		for scanner.Scan() {
+			line := scanner.Text()
+			fmt.Println(line) // Log to backend console as well
+			state.ParseLogForPlayers(line)
+			ws.Broadcast("log", line)
+		}
+	}()
+
+	// Stream stderr
+	go func() {
+		scanner := bufio.NewScanner(stderrPipe)
+		for scanner.Scan() {
+			line := scanner.Text()
+			fmt.Println(line)
+			ws.Broadcast("log", line)
+		}
+	}()
 
 	// Wait in a goroutine
 	go func() {

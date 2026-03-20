@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -10,16 +12,50 @@ import (
 	"github.com/user/server-manager/config"
 	"github.com/user/server-manager/database"
 	"github.com/user/server-manager/settings"
+	"github.com/user/server-manager/state"
 	"github.com/user/server-manager/ws"
 )
+
+func StartStatusBroadcaster() {
+	lastStatus := state.GetServerStatus()
+	for {
+		currentStatus := state.GetServerStatus()
+		if currentStatus != lastStatus {
+			ws.Broadcast("status", currentStatus)
+
+			if currentStatus == "Stopped" {
+				state.ClearOnlinePlayers()
+			}
+
+			lastStatus = currentStatus
+		}
+		time.Sleep(1 * time.Second)
+	}
+}
 
 func main() {
 	// Initialize Database
 	database.InitDB(filepath.Join(config.GetDataDir(), "mcmt.db"))
 
+	// Init online players from existing latest.log if server might be running
+	logFile := filepath.Join(config.GetServerDir(), "logs", "latest.log")
+	content, _ := os.ReadFile(logFile)
+	lines := []string{}
+	currentLine := ""
+	for _, b := range content {
+		currentLine += string(b)
+		if b == '\n' {
+			lines = append(lines, currentLine)
+			currentLine = ""
+		}
+	}
+	if currentLine != "" {
+		lines = append(lines, currentLine)
+	}
+	state.InitOnlinePlayersFromLog(lines)
+
 	// Start Background tasks
-	go ws.StartStatusBroadcaster()
-	go ws.StartLogTailer()
+	go StartStatusBroadcaster()
 
 	e := echo.New()
 
@@ -43,6 +79,7 @@ func main() {
 	e.GET("/api/server/ops", api.GetOps)
 	e.GET("/api/server/banned-players", api.GetBannedPlayers)
 	e.GET("/api/server/online", api.GetOnlinePlayers)
+	e.GET("/api/server/logs", api.GetServerLogs)
 
 	// Websocket
 	e.GET("/ws", ws.Handler)

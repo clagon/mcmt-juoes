@@ -1,8 +1,21 @@
 <script lang="ts">
 	import { logs, serverStatus } from '$lib/store';
+	import { onMount } from 'svelte';
 
 	let logContainer: HTMLElement | undefined = $state(undefined);
 	let command = $state('');
+
+	onMount(async () => {
+		try {
+			const res = await fetch('http://localhost:8080/api/server/logs');
+			const initialLogs = await res.json();
+			if (initialLogs && initialLogs.length > 0) {
+				logs.set(initialLogs);
+			}
+		} catch (e) {
+			console.error('Failed to fetch initial logs', e);
+		}
+	});
 
 	$effect(() => {
 		if ($logs.length && logContainer) {

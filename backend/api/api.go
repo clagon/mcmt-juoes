@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/user/server-manager/config"
 	"github.com/user/server-manager/process"
-	"github.com/user/server-manager/ws"
+	"github.com/user/server-manager/state"
 )
 
 func StartServer(c echo.Context) error {
@@ -91,9 +91,42 @@ func GetBannedPlayers(c echo.Context) error {
 }
 
 func GetOnlinePlayers(c echo.Context) error {
-	players := ws.GetOnlinePlayers()
+	players := state.GetOnlinePlayers()
 	if players == nil {
 		players = []string{} // Return empty array instead of null
 	}
 	return c.JSON(http.StatusOK, players)
+}
+
+func GetServerLogs(c echo.Context) error {
+	logFile := filepath.Join(config.GetServerDir(), "logs", "latest.log")
+	content, err := os.ReadFile(logFile)
+	if err != nil {
+		// Log file might not exist yet, just return empty
+		return c.JSON(http.StatusOK, []string{})
+	}
+
+	// We'll return the lines. For large files we'd tail, but we just read all here for simplicity.
+	// If it's too large, ideally we'd limit to last N lines.
+	// For now, since 'latest.log' usually isn't massive due to log rotation,
+	// returning split strings is fine for the terminal view.
+	lines := []string{}
+	currentLine := ""
+	for _, b := range content {
+		currentLine += string(b)
+		if b == '\n' {
+			lines = append(lines, currentLine)
+			currentLine = ""
+		}
+	}
+	if currentLine != "" {
+		lines = append(lines, currentLine)
+	}
+
+	// Optionally limit to the last 200 lines to avoid massive payloads
+	if len(lines) > 200 {
+		lines = lines[len(lines)-200:]
+	}
+
+	return c.JSON(http.StatusOK, lines)
 }
