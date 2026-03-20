@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: server-manager-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./server:/app/server  # Persistent Minecraft server jar and world data
+      - ./data:/app/data      # Persistent SQLite settings database
+    environment:
+      - PORT=8080
+      - SERVER_DIR=/app/server
+      - DATA_DIR=/app/data
+    restart: unless-stopped

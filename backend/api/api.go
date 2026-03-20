@@ -5,7 +5,10 @@ import (
 	"net/http"
 	"os"
 
+	"path/filepath"
+
 	"github.com/labstack/echo/v4"
+	"github.com/user/server-manager/config"
 	"github.com/user/server-manager/process"
 )
 
@@ -41,7 +44,7 @@ func CommandServer(c echo.Context) error {
 }
 
 func GetServerProperties(c echo.Context) error {
-	props, err := os.ReadFile("../server/server.properties")
+	props, err := os.ReadFile(filepath.Join(config.GetServerDir(), "server.properties"))
 	if err != nil {
 		return c.JSON(http.StatusOK, map[string]string{"content": ""})
 	}
@@ -51,7 +54,7 @@ func GetServerProperties(c echo.Context) error {
 // Player file parser helpers
 
 func readJSONFile(filename string) (interface{}, error) {
-	data, err := os.ReadFile("../server/" + filename)
+	data, err := os.ReadFile(filepath.Join(config.GetServerDir(), filename))
 	if err != nil {
 		return []interface{}{}, nil // Return empty list if file doesn't exist
 	}

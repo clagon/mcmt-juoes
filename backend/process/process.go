@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/user/server-manager/config"
 	"github.com/user/server-manager/database"
 )
 
@@ -62,7 +63,8 @@ func (m *Manager) Start() error {
 	m.mu.Unlock()
 
 	// Ensure server directory exists
-	_ = os.MkdirAll("../server", 0755)
+	serverDir := config.GetServerDir()
+	_ = os.MkdirAll(serverDir, 0755)
 
 	xms := database.GetSetting("java_xms")
 	xmx := database.GetSetting("java_xmx")
@@ -81,7 +83,7 @@ func (m *Manager) Start() error {
 	args = append(args, "-jar", "server.jar", "nogui")
 
 	m.cmd = exec.Command("java", args...)
-	m.cmd.Dir = "../server"
+	m.cmd.Dir = serverDir
 
 	stdin, err := m.cmd.StdinPipe()
 	if err != nil {

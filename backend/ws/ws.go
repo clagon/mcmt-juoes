@@ -7,8 +7,11 @@ import (
 	"sync"
 	"time"
 
+	"path/filepath"
+
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
+	"github.com/user/server-manager/config"
 	"github.com/user/server-manager/process"
 )
 
@@ -109,7 +112,7 @@ func StartStatusBroadcaster() {
 }
 
 func StartLogTailer() {
-	logFile := "../server/logs/latest.log"
+	logFile := filepath.Join(config.GetServerDir(), "logs", "latest.log")
 
 	var file *os.File
 	var err error

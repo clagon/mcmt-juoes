@@ -2,10 +2,12 @@ package main
 
 import (
 	"log"
+	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/user/server-manager/api"
+	"github.com/user/server-manager/config"
 	"github.com/user/server-manager/database"
 	"github.com/user/server-manager/settings"
 	"github.com/user/server-manager/ws"
@@ -13,7 +15,7 @@ import (
 
 func main() {
 	// Initialize Database
-	database.InitDB("../data/mcmt.db")
+	database.InitDB(filepath.Join(config.GetDataDir(), "mcmt.db"))
 
 	// Start Background tasks
 	go ws.StartStatusBroadcaster()

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -12,7 +13,8 @@ var DB *sql.DB
 
 func InitDB(dbPath string) {
 	// Create the directory if it doesn't exist
-	if err := os.MkdirAll("data", 0755); err != nil {
+	dir := filepath.Dir(dbPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
 		log.Fatalf("Failed to create data directory: %v", err)
 	}
 
