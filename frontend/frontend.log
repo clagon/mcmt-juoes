@@ -1,0 +1,41 @@
+
+> frontend@0.0.1 dev
+> vite dev
+
+2:07:07 PM [vite] (client) Forced re-optimization of dependencies
+
+  VITE v7.3.1  ready in 1575 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+2:07:39 PM [vite] (ssr) Error when evaluating SSR module /src/routes/+page.svelte: src/lib/components/Terminal.svelte:3:10 afterUpdate cannot be used in runes mode
+https://svelte.dev/e/runes_mode_invalid_import
+  Plugin: vite-plugin-svelte:compile
+  File: src/lib/components/Terminal.svelte:3:10
+   1 |  <script lang="ts">
+   2 |    import { logs, serverStatus } from '$lib/store';
+   3 |    import { afterUpdate } from 'svelte';
+                              ^
+   4 |
+   5 |    let logContainer: HTMLElement;
+
+[1;31m[500] GET /[0m
+
+2:08:34 PM [vite-plugin-svelte] src/lib/components/Terminal.svelte:5:5 `command` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+2:08:34 PM [vite] (ssr) Error when evaluating SSR module /src/routes/+page.svelte: src/lib/components/Management.svelte:116:1 `$:` is not allowed in runes mode, use `$derived` or `$effect` instead
+https://svelte.dev/e/legacy_reactive_statement_invalid
+  Plugin: vite-plugin-svelte:compile
+  File: src/lib/components/Management.svelte:116:1
+   114 |    // Derived list of all known players across files
+   115 |    let allPlayers: string[] = [];
+   116 |    $: {
+             ^
+   117 |      const names = new Set([
+   118 |        ...whitelist.map((p) => p.name),
+
+[1;31m[500] GET /[0m
+
+2:09:29 PM [vite] (ssr) page reload src/lib/components/Terminal.svelte
+2:11:37 PM [vite] (client) hmr update /src/routes/+layout.svelte
+2:11:37 PM [vite] (ssr) page reload src/routes/+layout.svelte
