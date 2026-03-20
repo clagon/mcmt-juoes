@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache-dependency-path: backend/go.sum
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Frontend Format Check
+        working-directory: frontend
+        run: npx prettier --check .
+
+      - name: Frontend Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Frontend Build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Frontend Test
+        working-directory: frontend
+        run: npm run test
+
+      - name: Backend Format Check
+        working-directory: backend
+        run: |
+          if [ -n "$(go fmt ./...)" ]; then
+            echo "Go code is not formatted. Run 'go fmt ./...'"
+            exit 1
+          fi
+
+      - name: Backend golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.64.6
+          working-directory: backend
+
+      - name: Backend Build
+        working-directory: backend
+        run: go build -v ./...
+
+      - name: Backend Test
+        working-directory: backend
+        run: go test -v ./...
