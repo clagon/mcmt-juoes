@@ -38,9 +38,9 @@ func InitDB(dbPath string) {
 
 func insertDefaults() {
 	// Java Memory defaults (e.g., 2GB)
-	SetSetting("java_xms", "2G")
-	SetSetting("java_xmx", "2G")
-	SetSetting("java_args", "")
+	_ = SetSetting("java_xms", "2G")
+	_ = SetSetting("java_xmx", "2G")
+	_ = SetSetting("java_args", "")
 }
 
 func GetSetting(key string) string {

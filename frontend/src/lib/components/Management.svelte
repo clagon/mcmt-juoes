@@ -287,7 +287,9 @@
 					class="space-y-4"
 				>
 					<div>
-						<label for="initial-memory" class="block text-gray-400 mb-1 text-xs">Initial Memory (-Xms)</label>
+						<label for="initial-memory" class="block text-gray-400 mb-1 text-xs"
+							>Initial Memory (-Xms)</label
+						>
 						<input
 							id="initial-memory"
 							type="text"
@@ -297,7 +299,9 @@
 						/>
 					</div>
 					<div>
-						<label for="max-memory" class="block text-gray-400 mb-1 text-xs">Max Memory (-Xmx)</label>
+						<label for="max-memory" class="block text-gray-400 mb-1 text-xs"
+							>Max Memory (-Xmx)</label
+						>
 						<input
 							id="max-memory"
 							type="text"
@@ -307,7 +311,9 @@
 						/>
 					</div>
 					<div>
-						<label for="additional-args" class="block text-gray-400 mb-1 text-xs">Additional Arguments</label>
+						<label for="additional-args" class="block text-gray-400 mb-1 text-xs"
+							>Additional Arguments</label
+						>
 						<input
 							id="additional-args"
 							type="text"

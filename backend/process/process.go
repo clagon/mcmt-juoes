@@ -62,7 +62,7 @@ func (m *Manager) Start() error {
 	m.mu.Unlock()
 
 	// Ensure server directory exists
-	os.MkdirAll("../server", 0755)
+	_ = os.MkdirAll("../server", 0755)
 
 	xms := database.GetSetting("java_xms")
 	xmx := database.GetSetting("java_xmx")

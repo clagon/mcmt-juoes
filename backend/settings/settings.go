@@ -28,9 +28,9 @@ func UpdateSettings(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	}
 
-	database.SetSetting("java_xms", s.JavaXms)
-	database.SetSetting("java_xmx", s.JavaXmx)
-	database.SetSetting("java_args", s.JavaArgs)
+	_ = database.SetSetting("java_xms", s.JavaXms)
+	_ = database.SetSetting("java_xmx", s.JavaXmx)
+	_ = database.SetSetting("java_args", s.JavaArgs)
 
 	return c.JSON(http.StatusOK, s)
 }

@@ -39,3 +39,14 @@ https://svelte.dev/e/legacy_reactive_statement_invalid
 2:09:29 PM [vite] (ssr) page reload src/lib/components/Terminal.svelte
 2:11:37 PM [vite] (client) hmr update /src/routes/+layout.svelte
 2:11:37 PM [vite] (ssr) page reload src/routes/+layout.svelte
+2:25:03 PM [vite] (client) page reload .svelte-kit/generated/client/nodes/0.js
+2:25:03 PM [vite] (client) page reload .svelte-kit/generated/client/nodes/1.js
+2:25:03 PM [vite] (client) page reload .svelte-kit/generated/client/nodes/2.js
+2:25:03 PM [vite] (client) page reload .svelte-kit/generated/client/app.js
+2:25:03 PM [vite] (client) page reload .svelte-kit/generated/client/matchers.js
+2:25:03 PM [vite] (ssr) page reload .svelte-kit/generated/server/internal.js
+2:25:03 PM [vite] (client) page reload .svelte-kit/generated/root.js
+2:25:03 PM [vite] (ssr) page reload .svelte-kit/generated/root.js
+2:25:04 PM [vite] (ssr) page reload .svelte-kit/generated/root.svelte
+2:25:24 PM [vite] (client) hmr update /src/lib/components/Management.svelte, /src/app.css
+2:25:24 PM [vite] (ssr) page reload src/lib/components/Management.svelte

@@ -27,9 +27,9 @@ func TestGetSettings(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Set initial values
-	database.SetSetting("java_xms", "1G")
-	database.SetSetting("java_xmx", "2G")
-	database.SetSetting("java_args", "-XX:+UseG1GC")
+	_ = database.SetSetting("java_xms", "1G")
+	_ = database.SetSetting("java_xmx", "2G")
+	_ = database.SetSetting("java_args", "-XX:+UseG1GC")
 
 	if err := settings.GetSettings(c); err != nil {
 		t.Fatalf("GetSettings handler error: %v", err)

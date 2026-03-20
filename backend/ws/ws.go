@@ -68,7 +68,7 @@ func Handler(c echo.Context) error {
 	clientsMu.Unlock()
 
 	// Send current status on connect
-	ws.WriteJSON(Message{
+	_ = ws.WriteJSON(Message{
 		Type: "status",
 		Data: process.GetManager().Status(),
 	})
@@ -76,7 +76,7 @@ func Handler(c echo.Context) error {
 	// Send cached logs
 	cacheMu.Lock()
 	for _, line := range logCache {
-		ws.WriteJSON(Message{Type: "log", Data: line})
+		_ = ws.WriteJSON(Message{Type: "log", Data: line})
 	}
 	cacheMu.Unlock()
 
@@ -124,7 +124,7 @@ func StartLogTailer() {
 	defer file.Close()
 
 	// Read from the beginning on start
-	file.Seek(0, 0)
+	_, _ = file.Seek(0, 0)
 	reader := bufio.NewReader(file)
 
 	for {
@@ -135,7 +135,7 @@ func StartLogTailer() {
 			// check if file was rotated/truncated
 			info, statErr := file.Stat()
 			if statErr == nil && info.Size() < getFileSize(file) {
-				file.Seek(0, 0)
+				_, _ = file.Seek(0, 0)
 				reader.Reset(file)
 			}
 			continue
