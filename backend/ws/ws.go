@@ -172,10 +172,16 @@ func StartLogTailer() {
 	// Read from the beginning on start
 	_, _ = file.Seek(0, 0)
 	reader := bufio.NewReader(file)
+	isCaughtUp := false
 
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
+			if !isCaughtUp {
+				// Hit the end of the existing file; we are now caught up.
+				isCaughtUp = true
+			}
+
 			time.Sleep(500 * time.Millisecond) // wait for more data
 
 			// check if file was rotated/truncated
@@ -183,13 +189,17 @@ func StartLogTailer() {
 			if statErr == nil && info.Size() < getFileSize(file) {
 				_, _ = file.Seek(0, 0)
 				reader.Reset(file)
+				isCaughtUp = false // We need to fast-forward again
 			}
 			continue
 		}
 
 		cacheLog(line)
 		parseLogForPlayers(line)
-		Broadcast("log", line)
+
+		if isCaughtUp {
+			Broadcast("log", line)
+		}
 	}
 }
 
