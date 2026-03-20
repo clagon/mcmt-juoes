@@ -42,6 +42,7 @@ func main() {
 	e.GET("/api/server/whitelist", api.GetWhitelist)
 	e.GET("/api/server/ops", api.GetOps)
 	e.GET("/api/server/banned-players", api.GetBannedPlayers)
+	e.GET("/api/server/online", api.GetOnlinePlayers)
 
 	// Websocket
 	e.GET("/ws", ws.Handler)

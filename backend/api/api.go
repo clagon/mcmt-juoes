@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/user/server-manager/config"
 	"github.com/user/server-manager/process"
+	"github.com/user/server-manager/ws"
 )
 
 func StartServer(c echo.Context) error {
@@ -87,4 +88,12 @@ func GetBannedPlayers(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, data)
+}
+
+func GetOnlinePlayers(c echo.Context) error {
+	players := ws.GetOnlinePlayers()
+	if players == nil {
+		players = []string{} // Return empty array instead of null
+	}
+	return c.JSON(http.StatusOK, players)
 }

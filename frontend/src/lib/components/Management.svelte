@@ -8,6 +8,7 @@
 	let ops: Player[] = $state([]);
 	let banned: Player[] = $state([]);
 	let properties: string = $state('');
+	let onlinePlayers: string[] = $state([]);
 
 	let activeTab: 'players' | 'settings' = $state('players');
 
@@ -16,16 +17,18 @@
 
 	async function fetchData() {
 		try {
-			const [wl, op, ban, props] = await Promise.all([
+			const [wl, op, ban, props, online] = await Promise.all([
 				fetch('http://localhost:8080/api/server/whitelist').then((r) => r.json()),
 				fetch('http://localhost:8080/api/server/ops').then((r) => r.json()),
 				fetch('http://localhost:8080/api/server/banned-players').then((r) => r.json()),
-				fetch('http://localhost:8080/api/server/properties').then((r) => r.json())
+				fetch('http://localhost:8080/api/server/properties').then((r) => r.json()),
+				fetch('http://localhost:8080/api/server/online').then((r) => r.json())
 			]);
 			whitelist = wl || [];
 			ops = op || [];
 			banned = ban || [];
 			properties = props.content || '';
+			onlinePlayers = online || [];
 		} catch (e) {
 			console.error('Failed to fetch server data', e);
 		}
@@ -63,6 +66,7 @@
 	const isOp = (name: string) => ops.some((p) => p.name === name);
 	const isWhitelisted = (name: string) => whitelist.some((p) => p.name === name);
 	const isBanned = (name: string) => banned.some((p) => p.name === name);
+	const isOnline = (name: string) => onlinePlayers.includes(name);
 
 	let inputPlayer = $state('');
 	function handleAddAction(action: 'whitelist' | 'op' | 'ban') {
@@ -181,8 +185,13 @@
 					</div>
 				</div>
 
-				<div class="text-vapor-pink glow-pink font-bold border-b border-vapor-pink pb-1">
-					KNOWN PLAYERS
+				<div
+					class="text-vapor-pink glow-pink font-bold border-b border-vapor-pink pb-1 flex justify-between"
+				>
+					<span>KNOWN PLAYERS</span>
+					{#if $serverStatus === 'Running'}
+						<span class="text-green-400 text-xs">ONLINE: {onlinePlayers.length}</span>
+					{/if}
 				</div>
 
 				{#if allPlayers.length === 0}
@@ -192,7 +201,15 @@
 						{#each allPlayers as player (player)}
 							<li class="flex flex-col border border-gray-800 p-2 rounded bg-gray-900/50">
 								<div class="flex justify-between items-center mb-2">
-									<span class="text-vapor-cyan font-bold">{player}</span>
+									<span class="text-vapor-cyan font-bold flex items-center gap-2">
+										{player}
+										{#if isOnline(player)}
+											<span
+												class="text-[10px] bg-green-500 text-black px-1 font-black shadow-[0_0_5px_#22c55e] rounded-sm"
+												>ONLINE</span
+											>
+										{/if}
+									</span>
 									<div class="flex gap-1 text-[10px]">
 										{#if isOp(player)}
 											<span

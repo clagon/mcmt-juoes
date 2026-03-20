@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"net/http"
 	"os"
+	"regexp"
 	"sync"
 	"time"
 
@@ -31,7 +32,44 @@ var (
 	clientsMu sync.Mutex
 	logCache  []string
 	cacheMu   sync.Mutex
+
+	onlinePlayers   = make(map[string]bool)
+	onlinePlayersMu sync.Mutex
+
+	joinRegex = regexp.MustCompile(`\[\d{2}:\d{2}:\d{2}\] \[Server thread\/INFO\]: (.+) joined the game`)
+	leftRegex = regexp.MustCompile(`\[\d{2}:\d{2}:\d{2}\] \[Server thread\/INFO\]: (.+) left the game`)
 )
+
+func GetOnlinePlayers() []string {
+	onlinePlayersMu.Lock()
+	defer onlinePlayersMu.Unlock()
+
+	var players []string
+	for p := range onlinePlayers {
+		players = append(players, p)
+	}
+	return players
+}
+
+func parseLogForPlayers(line string) {
+	if matches := joinRegex.FindStringSubmatch(line); len(matches) > 1 {
+		player := matches[1]
+		onlinePlayersMu.Lock()
+		onlinePlayers[player] = true
+		onlinePlayersMu.Unlock()
+	} else if matches := leftRegex.FindStringSubmatch(line); len(matches) > 1 {
+		player := matches[1]
+		onlinePlayersMu.Lock()
+		delete(onlinePlayers, player)
+		onlinePlayersMu.Unlock()
+	}
+}
+
+func clearOnlinePlayers() {
+	onlinePlayersMu.Lock()
+	onlinePlayers = make(map[string]bool)
+	onlinePlayersMu.Unlock()
+}
 
 const maxLogCache = 100
 
@@ -105,6 +143,11 @@ func StartStatusBroadcaster() {
 		currentStatus := process.GetManager().Status()
 		if currentStatus != lastStatus {
 			Broadcast("status", currentStatus)
+
+			if currentStatus == process.StatusStopped {
+				clearOnlinePlayers()
+			}
+
 			lastStatus = currentStatus
 		}
 		time.Sleep(1 * time.Second)
@@ -145,6 +188,7 @@ func StartLogTailer() {
 		}
 
 		cacheLog(line)
+		parseLogForPlayers(line)
 		Broadcast("log", line)
 	}
 }
