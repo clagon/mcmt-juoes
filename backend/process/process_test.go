@@ -15,22 +15,45 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestManagerStatusAndStop(t *testing.T) {
+func TestManagerOperations(t *testing.T) {
 	mgr := process.GetManager()
 
-	if mgr.Status() != process.StatusStopped {
-		t.Errorf("expected initial status %s, got %s", process.StatusStopped, mgr.Status())
+	tests := []struct {
+		name      string
+		operation func() error
+		wantErr   bool
+	}{
+		{
+			name: "Status is Stopped initially",
+			operation: func() error {
+				if mgr.Status() != process.StatusStopped {
+					return os.ErrInvalid
+				}
+				return nil
+			},
+			wantErr: false,
+		},
+		{
+			name: "Command fails when Stopped",
+			operation: func() error {
+				return mgr.Command("help")
+			},
+			wantErr: true,
+		},
+		{
+			name: "Stop fails when Stopped",
+			operation: func() error {
+				return mgr.Stop()
+			},
+			wantErr: true,
+		},
 	}
 
-	// Sending command while stopped should fail
-	err := mgr.Command("help")
-	if err == nil {
-		t.Error("expected error sending command when stopped, got nil")
-	}
-
-	// Stopping while stopped should fail
-	err = mgr.Stop()
-	if err == nil {
-		t.Error("expected error stopping when already stopped, got nil")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.operation(); (err != nil) != tt.wantErr {
+				t.Errorf("%s operation error = %v, wantErr %v", tt.name, err, tt.wantErr)
+			}
+		})
 	}
 }
