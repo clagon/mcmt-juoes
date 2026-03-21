@@ -10,7 +10,7 @@
 	let properties: string = $state('');
 	let onlinePlayers: string[] = $state([]);
 
-	let activeTab: 'players' | 'settings' = $state('players');
+	let activeTab: 'players' | 'known' | 'settings' = $state('players');
 
 	// Refresh timer
 	let interval: ReturnType<typeof setInterval>;
@@ -130,7 +130,7 @@
 	class="col-span-1 border-2 border-vapor-pink rounded-lg bg-black/80 backdrop-blur-sm shadow-[0_0_15px_var(--color-vapor-pink)] flex flex-col h-[600px] z-10 overflow-hidden font-mono"
 >
 	<!-- Header / Tabs -->
-	<div class="flex border-b-2 border-vapor-pink">
+	<div class="flex border-b-2 border-vapor-pink text-xs sm:text-sm">
 		<button
 			onclick={() => (activeTab = 'players')}
 			class="flex-1 py-3 font-bold text-center tracking-widest transition-colors {activeTab ===
@@ -139,6 +139,15 @@
 				: 'text-vapor-pink hover:bg-vapor-pink/20'}"
 		>
 			PLAYERS
+		</button>
+		<button
+			onclick={() => (activeTab = 'known')}
+			class="flex-1 py-3 font-bold text-center tracking-widest border-l-2 border-vapor-pink transition-colors {activeTab ===
+			'known'
+				? 'bg-vapor-pink text-black'
+				: 'text-vapor-pink hover:bg-vapor-pink/20'}"
+		>
+			KNOWN
 		</button>
 		<button
 			onclick={() => (activeTab = 'settings')}
@@ -153,6 +162,80 @@
 
 	<div class="flex-grow overflow-y-auto p-4 custom-scrollbar text-sm">
 		{#if activeTab === 'players'}
+			<div class="space-y-6">
+				<div
+					class="text-vapor-pink glow-pink font-bold border-b border-vapor-pink pb-1 flex justify-between items-center"
+				>
+					<span>ONLINE PLAYERS</span>
+					<span class="text-green-400 text-xs">
+						{$serverStatus === 'Running' ? `ONLINE: ${onlinePlayers.length}` : 'SERVER OFFLINE'}
+					</span>
+				</div>
+
+				{#if onlinePlayers.length === 0}
+					<div class="text-gray-500 italic text-center py-4">No players currently online.</div>
+				{:else}
+					<ul class="space-y-3">
+						{#each onlinePlayers as player (player)}
+							<li
+								class="flex flex-col border border-green-500/50 p-2 rounded bg-green-900/10 shadow-[0_0_5px_rgba(34,197,94,0.2)]"
+							>
+								<div class="flex justify-between items-center mb-2">
+									<span class="text-vapor-cyan font-bold flex items-center gap-3">
+										<img
+											src={`https://mc-heads.net/avatar/${player}/32`}
+											alt={player}
+											class="w-8 h-8 rounded pixelated border border-gray-600"
+										/>
+										{player}
+									</span>
+									<div class="flex gap-1 text-[10px]">
+										{#if isOp(player)}
+											<span
+												class="bg-yellow-400/20 text-yellow-400 px-1 border border-yellow-400/50"
+												>OP</span
+											>
+										{/if}
+										{#if isWhitelisted(player)}
+											<span class="bg-green-400/20 text-green-400 px-1 border border-green-400/50"
+												>WL</span
+											>
+										{/if}
+									</div>
+								</div>
+
+								<div class="grid grid-cols-2 gap-1 text-[10px]">
+									{#if isOp(player)}
+										<button
+											disabled={$serverStatus !== 'Running'}
+											onclick={() => execute('deop', player)}
+											class="border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black py-1 disabled:opacity-50"
+											>DE-OP</button
+										>
+									{:else}
+										<button
+											disabled={$serverStatus !== 'Running'}
+											onclick={() => execute('op', player)}
+											class="border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black py-1 disabled:opacity-50"
+											>OP</button
+										>
+									{/if}
+
+									<button
+										disabled={$serverStatus !== 'Running'}
+										onclick={() => execute('kick', player)}
+										class="border border-orange-400 text-orange-400 hover:bg-orange-400 hover:text-black py-1 disabled:opacity-50"
+										>KICK</button
+									>
+								</div>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			</div>
+		{/if}
+
+		{#if activeTab === 'known'}
 			<div class="space-y-6">
 				<!-- Add Player Action Box -->
 				<div class="border border-vapor-purple p-3 rounded bg-black/50">
@@ -185,13 +268,8 @@
 					</div>
 				</div>
 
-				<div
-					class="text-vapor-pink glow-pink font-bold border-b border-vapor-pink pb-1 flex justify-between"
-				>
-					<span>KNOWN PLAYERS</span>
-					{#if $serverStatus === 'Running'}
-						<span class="text-green-400 text-xs">ONLINE: {onlinePlayers.length}</span>
-					{/if}
+				<div class="text-vapor-pink glow-pink font-bold border-b border-vapor-pink pb-1">
+					KNOWN PLAYERS
 				</div>
 
 				{#if allPlayers.length === 0}
@@ -201,14 +279,13 @@
 						{#each allPlayers as player (player)}
 							<li class="flex flex-col border border-gray-800 p-2 rounded bg-gray-900/50">
 								<div class="flex justify-between items-center mb-2">
-									<span class="text-vapor-cyan font-bold flex items-center gap-2">
+									<span class="text-vapor-cyan font-bold flex items-center gap-3">
+										<img
+											src={`https://mc-heads.net/avatar/${player}/32`}
+											alt={player}
+											class="w-8 h-8 rounded pixelated border border-gray-600"
+										/>
 										{player}
-										{#if isOnline(player)}
-											<span
-												class="text-[10px] bg-green-500 text-black px-1 font-black shadow-[0_0_5px_#22c55e] rounded-sm"
-												>ONLINE</span
-											>
-										{/if}
 									</span>
 									<div class="flex gap-1 text-[10px]">
 										{#if isOp(player)}
@@ -263,25 +340,18 @@
 										>
 									{/if}
 
-									<button
-										disabled={$serverStatus !== 'Running'}
-										onclick={() => execute('kick', player)}
-										class="border border-orange-400 text-orange-400 hover:bg-orange-400 hover:text-black py-1 disabled:opacity-50"
-										>KICK</button
-									>
-
 									{#if isBanned(player)}
 										<button
 											disabled={$serverStatus !== 'Running'}
 											onclick={() => execute('pardon', player)}
-											class="border border-red-500 text-red-500 hover:bg-red-500 hover:text-black py-1 disabled:opacity-50"
+											class="border border-red-500 text-red-500 hover:bg-red-500 hover:text-black py-1 disabled:opacity-50 col-span-2"
 											>UNBAN</button
 										>
 									{:else}
 										<button
 											disabled={$serverStatus !== 'Running'}
 											onclick={() => execute('ban', player)}
-											class="border border-red-500 text-red-500 hover:bg-red-500 hover:text-black py-1 disabled:opacity-50"
+											class="border border-red-500 text-red-500 hover:bg-red-500 hover:text-black py-1 disabled:opacity-50 col-span-2"
 											>BAN</button
 										>
 									{/if}
