@@ -8,6 +8,7 @@ services:
     container_name: server-manager-backend
     ports:
       - "8080:8080"
+      - "25565:25565"
     volumes:
       - ./server:/app/server  # Persistent Minecraft server jar and world data
       - ./data:/app/data      # Persistent SQLite settings database
