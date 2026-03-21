@@ -240,12 +240,19 @@
 				<!-- Add Player Action Box -->
 				<div class="border border-vapor-purple p-3 rounded bg-black/50">
 					<div class="text-vapor-cyan mb-2">TARGET PLAYER:</div>
-					<input
-						type="text"
-						bind:value={inputPlayer}
-						placeholder="Username..."
-						class="w-full bg-gray-900 border border-vapor-cyan p-2 text-vapor-cyan outline-none mb-3 uppercase"
-					/>
+					<form
+						onsubmit={(e) => {
+							e.preventDefault();
+							handleAddAction('whitelist');
+						}}
+					>
+						<input
+							type="text"
+							bind:value={inputPlayer}
+							placeholder="Username... (Press Enter to Whitelist)"
+							class="w-full bg-gray-900 border border-vapor-cyan p-2 text-vapor-cyan outline-none mb-3 uppercase placeholder-gray-600"
+						/>
+					</form>
 					<div class="grid grid-cols-3 gap-2">
 						<button
 							disabled={$serverStatus !== 'Running'}
