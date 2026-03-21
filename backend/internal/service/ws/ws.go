@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
-	"github.com/user/server-manager/state"
+	"github.com/user/server-manager/internal/service/state"
 )
 
 var upgrader = websocket.Upgrader{
