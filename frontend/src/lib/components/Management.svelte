@@ -66,7 +66,6 @@
 	const isOp = (name: string) => ops.some((p) => p.name === name);
 	const isWhitelisted = (name: string) => whitelist.some((p) => p.name === name);
 	const isBanned = (name: string) => banned.some((p) => p.name === name);
-	const isOnline = (name: string) => onlinePlayers.includes(name);
 
 	let inputPlayer = $state('');
 	function handleAddAction(action: 'whitelist' | 'op' | 'ban') {
