@@ -4,6 +4,8 @@
 	import Management from '$lib/components/Management.svelte';
 </script>
 
-<Controls />
-<Terminal />
-<Management />
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+	<Controls />
+	<Terminal />
+	<Management />
+</div>

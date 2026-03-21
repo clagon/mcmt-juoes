@@ -40,7 +40,7 @@
 		</div>
 	</header>
 
-	<main class="w-full max-w-6xl flex-grow gap-6 grid grid-cols-1 md:grid-cols-3 z-10">
+	<main class="w-full max-w-6xl flex-grow z-10">
 		{@render children()}
 	</main>
 </div>
