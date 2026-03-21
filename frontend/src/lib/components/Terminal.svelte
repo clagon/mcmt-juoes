@@ -96,66 +96,67 @@
 </script>
 
 <div
-	class="col-span-1 md:col-span-2 flex flex-col bg-black/80 backdrop-blur-sm border-2 border-vapor-cyan shadow-[0_0_15px_var(--color-vapor-cyan)] rounded-lg overflow-hidden h-[600px] z-10 relative"
+	class="flex flex-col bg-[#110e19]/90 border-[3px] border-[#00f0ff] rounded-[12px] overflow-hidden h-[500px] z-10 relative shadow-[0_0_15px_rgba(0,240,255,0.4)]"
 >
 	<!-- CRT screen overlay -->
 	<div
-		class="absolute inset-0 pointer-events-none z-20"
+		class="absolute inset-0 pointer-events-none z-20 mix-blend-screen opacity-10"
 		style="background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%;"
 	></div>
 
 	<!-- Terminal Header -->
 	<div
-		class="bg-vapor-bg/80 border-b-2 border-vapor-cyan px-4 py-2 flex items-center justify-between z-10"
+		class="bg-[#1a1130] border-b-[3px] border-[#00f0ff] px-4 py-2 flex items-center justify-between z-10"
 	>
 		<span
-			class="text-vapor-cyan font-mono text-sm uppercase tracking-widest"
-			style="text-shadow: 0 0 5px var(--color-vapor-cyan);"
+			class="text-[#00f0ff] font-mono text-sm uppercase tracking-widest font-bold"
 		>
-			>_ SERVER_TERMINAL.EXE
+			SERVER_TERMINAL.EXE
 		</span>
 		<div class="flex gap-2">
-			<div class="w-3 h-3 rounded-full bg-red-500"></div>
-			<div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-			<div class="w-3 h-3 rounded-full bg-green-500"></div>
+			<div class="w-3 h-3 rounded-full bg-[#3aff5c] shadow-[0_0_5px_#3aff5c]"></div>
+			<div class="w-3 h-3 rounded-full bg-[#ffcf54] shadow-[0_0_5px_#ffcf54]"></div>
+			<div class="w-3 h-3 rounded-full bg-[#ff0055] shadow-[0_0_5px_#ff0055]"></div>
 		</div>
 	</div>
 
 	<!-- Log Output -->
 	<div
 		bind:this={logContainer}
-		class="flex-grow p-4 font-mono text-sm overflow-y-auto bg-black text-green-400 z-10"
+		class="flex-grow p-4 font-mono text-sm overflow-y-auto bg-[#110e19] text-[#71d283] z-10 custom-scrollbar"
 	>
 		{#each $logs as log, i (i)}
 			<div
-				class="whitespace-pre-wrap break-words border-b border-green-900/30 pb-1 mb-1 font-mono text-xs"
+				class="whitespace-pre-wrap break-words border-[#1d2720] pb-[2px] mb-[2px] font-mono text-[13px] leading-tight"
 			>
 				{log}
 			</div>
 		{/each}
+        <div class="h-4 w-2 bg-[#71d283] animate-pulse mt-1 inline-block"></div>
 	</div>
 
 	<!-- Command Input -->
 	<form
 		onsubmit={sendCommand}
-		class="border-t-2 border-vapor-cyan flex items-center bg-gray-900 px-4 py-3 z-10"
+		class="border-t-[3px] border-[#00f0ff] flex items-center bg-[#1a1130] p-3 z-10"
 	>
-		<span
-			class="text-vapor-pink mr-2 font-bold"
-			style="text-shadow: 0 0 5px var(--color-vapor-pink);">></span
-		>
-		<input
-			type="text"
-			bind:value={command}
-			onkeydown={handleKeydown}
-			placeholder={$serverStatus === 'Running' ? 'Enter server command...' : 'Server is offline...'}
-			disabled={$serverStatus !== 'Running'}
-			class="flex-grow bg-transparent text-vapor-cyan placeholder-gray-600 outline-none font-mono disabled:opacity-50 disabled:cursor-not-allowed uppercase"
-		/>
+		<div class="flex-grow border-[2px] border-[#42395d] bg-transparent rounded px-3 py-2 flex items-center group focus-within:border-[#00f0ff] transition-colors">
+            <span
+                class="text-[#00f0ff] mr-3 font-bold font-mono"
+                >></span>
+            <input
+                type="text"
+                bind:value={command}
+                onkeydown={handleKeydown}
+                placeholder={$serverStatus === 'Running' ? 'ENTER SERVER COMMAND...' : 'SERVER IS OFFLINE...'}
+                disabled={$serverStatus !== 'Running'}
+                class="w-full bg-transparent text-[#00f0ff] placeholder-[#42395d] outline-none font-mono disabled:opacity-50 disabled:cursor-not-allowed uppercase text-sm"
+            />
+        </div>
 		<button
 			type="submit"
 			disabled={$serverStatus !== 'Running' || !command.trim()}
-			class="ml-2 px-6 py-2 bg-vapor-purple text-black font-black uppercase tracking-wider text-sm hover:bg-vapor-pink hover:shadow-[0_0_15px_var(--color-vapor-pink)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+			class="ml-3 px-6 py-2 bg-transparent border-[2px] border-[#00f0ff] text-[#00f0ff] rounded font-black uppercase tracking-wider text-sm hover:bg-[#00f0ff] hover:text-[#110e19] hover:shadow-[0_0_15px_#00f0ff] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 		>
 			EXEC
 		</button>
@@ -164,14 +165,16 @@
 
 <style>
 	/* Custom scrollbar for terminal */
-	::-webkit-scrollbar {
-		width: 10px;
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 12px;
 	}
-	::-webkit-scrollbar-track {
-		background: #000;
-		border-left: 1px solid var(--color-vapor-cyan);
+	.custom-scrollbar::-webkit-scrollbar-track {
+		background: #110e19;
+		border-left: 2px solid #28203c;
 	}
-	::-webkit-scrollbar-thumb {
-		background: var(--color-vapor-purple);
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		background: #00f0ff;
+        border-radius: 4px;
+        border: 2px solid #110e19;
 	}
 </style>

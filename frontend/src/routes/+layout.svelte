@@ -11,36 +11,26 @@
 </script>
 
 <div
-	class="min-h-screen bg-vapor-bg text-vapor-cyan font-sans relative overflow-hidden flex flex-col items-center py-10 px-4"
+	class="min-h-screen bg-[#0d0814] text-[#00f0ff] font-sans relative overflow-hidden flex flex-col items-center py-8 px-4"
 >
+	<!-- Sun -->
+	<div class="absolute top-10 left-20 z-[-2] pointer-events-none opacity-60">
+		<div class="w-48 h-48 rounded-full bg-gradient-to-b from-[#ffcf54] to-[#ff0055] blur-[2px]"></div>
+	</div>
+    <!-- Triangle -->
+	<div class="absolute top-10 right-32 z-[-2] pointer-events-none opacity-40">
+		<div class="w-0 h-0 border-l-[60px] border-r-[60px] border-t-[100px] border-l-transparent border-r-transparent border-t-[#a355ff] blur-[4px]"></div>
+	</div>
+
 	<!-- Background grid -->
 	<div
-		class="absolute inset-0 z-[-1] opacity-20 pointer-events-none"
-		style="background-image: linear-gradient(var(--color-vapor-pink) 1px, transparent 1px), linear-gradient(90deg, var(--color-vapor-pink) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px);"
+		class="absolute bottom-0 left-0 right-0 h-[60%] z-[-1] opacity-30 pointer-events-none"
+		style="background-image: linear-gradient(#ff0055 2px, transparent 2px), linear-gradient(90deg, #ff0055 2px, transparent 2px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(0px); transform-origin: top center;"
 	></div>
+    <!-- Horizon line -->
+    <div class="absolute top-[40%] left-0 right-0 h-[2px] bg-[#ff0055] z-[-1] shadow-[0_0_15px_#ff0055]"></div>
 
-	<header class="mb-10 text-center relative z-10 w-full">
-		<h1
-			class="text-4xl md:text-6xl font-black text-vapor-pink glow-pink tracking-widest uppercase italic border-b-4 border-vapor-purple pb-2 inline-block"
-		>
-			Server Manager
-		</h1>
-		<div class="flex items-center justify-center mt-4 gap-4">
-			<span class="text-vapor-cyan glow-cyan tracking-widest text-lg font-mono">STATUS:</span>
-			<span
-				class="px-4 py-1 border-2 font-bold tracking-widest uppercase
-				{$serverStatus === 'Running'
-					? 'text-green-400 border-green-400'
-					: $serverStatus === 'Starting'
-						? 'text-yellow-400 border-yellow-400'
-						: 'text-red-400 border-red-400'}"
-			>
-				{$serverStatus}
-			</span>
-		</div>
-	</header>
-
-	<main class="w-full max-w-6xl flex-grow gap-6 grid grid-cols-1 md:grid-cols-3 z-10">
+	<main class="w-full max-w-7xl flex-grow gap-6 grid grid-cols-1 md:grid-cols-3 z-10 mt-2">
 		{@render children()}
 	</main>
 </div>
