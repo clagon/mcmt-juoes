@@ -9,12 +9,12 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
-	"github.com/user/server-manager/database"
-	"github.com/user/server-manager/settings"
+	"github.com/user/server-manager/internal/handler/settings"
+	"github.com/user/server-manager/internal/repository"
 )
 
 func TestMain(m *testing.M) {
-	database.InitDB(":memory:")
+	repository.InitDB(":memory:")
 	code := m.Run()
 	os.Exit(code)
 }
@@ -34,9 +34,9 @@ func TestGetSettings(t *testing.T) {
 		{
 			name: "Success Returns 1G 2G",
 			setup: func() {
-				_ = database.SetSetting("java_xms", "1G")
-				_ = database.SetSetting("java_xmx", "2G")
-				_ = database.SetSetting("java_args", "-XX:+UseG1GC")
+				_ = repository.SetSetting("java_xms", "1G")
+				_ = repository.SetSetting("java_xmx", "2G")
+				_ = repository.SetSetting("java_args", "-XX:+UseG1GC")
 			},
 			wantErr:     false,
 			wantStatus:  http.StatusOK,
@@ -125,7 +125,7 @@ func TestUpdateSettings(t *testing.T) {
 			if rec.Code != tt.wantStatus {
 				t.Errorf("UpdateSettings() status = %v, want %v", rec.Code, tt.wantStatus)
 			}
-			if dbVal := database.GetSetting("java_xms"); dbVal != tt.wantDBXms {
+			if dbVal := repository.GetSetting("java_xms"); dbVal != tt.wantDBXms {
 				t.Errorf("UpdateSettings() DB java_xms = %v, want %v", dbVal, tt.wantDBXms)
 			}
 		})

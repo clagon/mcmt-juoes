@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/user/server-manager/database"
+	"github.com/user/server-manager/internal/repository"
 )
 
 type Settings struct {
@@ -15,9 +15,9 @@ type Settings struct {
 
 func GetSettings(c echo.Context) error {
 	s := Settings{
-		JavaXms:  database.GetSetting("java_xms"),
-		JavaXmx:  database.GetSetting("java_xmx"),
-		JavaArgs: database.GetSetting("java_args"),
+		JavaXms:  repository.GetSetting("java_xms"),
+		JavaXmx:  repository.GetSetting("java_xmx"),
+		JavaArgs: repository.GetSetting("java_args"),
 	}
 	return c.JSON(http.StatusOK, s)
 }
@@ -28,9 +28,9 @@ func UpdateSettings(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Invalid request body")
 	}
 
-	_ = database.SetSetting("java_xms", s.JavaXms)
-	_ = database.SetSetting("java_xmx", s.JavaXmx)
-	_ = database.SetSetting("java_args", s.JavaArgs)
+	_ = repository.SetSetting("java_xms", s.JavaXms)
+	_ = repository.SetSetting("java_xmx", s.JavaXmx)
+	_ = repository.SetSetting("java_args", s.JavaArgs)
 
 	return c.JSON(http.StatusOK, s)
 }

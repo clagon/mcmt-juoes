@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/user/server-manager/config"
+	"github.com/user/server-manager/internal/config"
 )
 
 func TestGetServerDir(t *testing.T) {

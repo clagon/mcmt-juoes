@@ -8,12 +8,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/user/server-manager/api"
-	"github.com/user/server-manager/config"
-	"github.com/user/server-manager/database"
-	"github.com/user/server-manager/settings"
-	"github.com/user/server-manager/state"
-	"github.com/user/server-manager/ws"
+
+	"github.com/user/server-manager/internal/config"
+	"github.com/user/server-manager/internal/handler/api"
+	"github.com/user/server-manager/internal/handler/settings"
+	"github.com/user/server-manager/internal/repository"
+	"github.com/user/server-manager/internal/service/state"
+	"github.com/user/server-manager/internal/service/ws"
 )
 
 func StartStatusBroadcaster() {
@@ -35,7 +36,7 @@ func StartStatusBroadcaster() {
 
 func main() {
 	// Initialize Database
-	database.InitDB(filepath.Join(config.GetDataDir(), "mcmt.db"))
+	repository.InitDB(filepath.Join(config.GetDataDir(), "mcmt.db"))
 
 	// Init online players from existing latest.log if server might be running
 	logFile := filepath.Join(config.GetServerDir(), "logs", "latest.log")
@@ -64,22 +65,25 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
+	// Handlers
+	mcHandler := api.NewMinecraftHandler()
+
 	// Settings API
 	e.GET("/api/settings", settings.GetSettings)
 	e.PUT("/api/settings", settings.UpdateSettings)
 
 	// Server API
-	e.POST("/api/server/start", api.StartServer)
-	e.POST("/api/server/stop", api.StopServer)
-	e.POST("/api/server/command", api.CommandServer)
+	e.POST("/api/server/start", mcHandler.StartServer)
+	e.POST("/api/server/stop", mcHandler.StopServer)
+	e.POST("/api/server/command", mcHandler.CommandServer)
 
 	// File API
-	e.GET("/api/server/properties", api.GetServerProperties)
-	e.GET("/api/server/whitelist", api.GetWhitelist)
-	e.GET("/api/server/ops", api.GetOps)
-	e.GET("/api/server/banned-players", api.GetBannedPlayers)
-	e.GET("/api/server/online", api.GetOnlinePlayers)
-	e.GET("/api/server/logs", api.GetServerLogs)
+	e.GET("/api/server/properties", mcHandler.GetServerProperties)
+	e.GET("/api/server/whitelist", mcHandler.GetWhitelist)
+	e.GET("/api/server/ops", mcHandler.GetOps)
+	e.GET("/api/server/banned-players", mcHandler.GetBannedPlayers)
+	e.GET("/api/server/online", mcHandler.GetOnlinePlayers)
+	e.GET("/api/server/logs", mcHandler.GetServerLogs)
 
 	// Websocket
 	e.GET("/ws", ws.Handler)
