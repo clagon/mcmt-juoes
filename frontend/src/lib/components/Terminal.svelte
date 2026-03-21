@@ -5,6 +5,11 @@
 	let logContainer: HTMLElement | undefined = $state(undefined);
 	let command = $state('');
 
+	// History state
+	let commandHistory: string[] = $state([]);
+	let historyIndex: number = $state(-1);
+	let currentDraft: string = $state('');
+
 	onMount(async () => {
 		try {
 			const res = await fetch('http://localhost:8080/api/server/logs');
@@ -23,16 +28,66 @@
 		}
 	});
 
+	function handleKeydown(e: KeyboardEvent) {
+		const target = e.target as HTMLInputElement;
+		if ($serverStatus !== 'Running') return;
+
+		if (e.key === 'ArrowUp') {
+			if (target.selectionStart === 0 && target.selectionEnd === 0) {
+				e.preventDefault();
+				if (commandHistory.length > 0) {
+					if (historyIndex === -1) {
+						currentDraft = command;
+						historyIndex = commandHistory.length - 1;
+					} else if (historyIndex > 0) {
+						historyIndex--;
+					}
+					command = commandHistory[historyIndex];
+				}
+			} else {
+				// Prevent default jump and manually move cursor to start
+				e.preventDefault();
+				target.setSelectionRange(0, 0);
+			}
+		} else if (e.key === 'ArrowDown') {
+			const end = command.length;
+			if (target.selectionStart === end && target.selectionEnd === end) {
+				e.preventDefault();
+				if (historyIndex !== -1) {
+					if (historyIndex < commandHistory.length - 1) {
+						historyIndex++;
+						command = commandHistory[historyIndex];
+					} else {
+						historyIndex = -1;
+						command = currentDraft;
+					}
+				}
+			} else {
+				// Prevent default jump and manually move cursor to end
+				e.preventDefault();
+				target.setSelectionRange(end, end);
+			}
+		}
+	}
+
 	async function sendCommand(e: Event) {
 		e.preventDefault();
-		if (!command.trim() || $serverStatus !== 'Running') return;
+		const cmd = command.trim();
+		if (!cmd || $serverStatus !== 'Running') return;
 
 		try {
 			await fetch('http://localhost:8080/api/server/command', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ command: command.trim() })
+				body: JSON.stringify({ command: cmd })
 			});
+
+			if (commandHistory.length === 0 || commandHistory[commandHistory.length - 1] !== cmd) {
+				commandHistory.push(cmd);
+			}
+
+			historyIndex = -1;
+			currentDraft = '';
 			command = '';
 		} catch (err) {
 			console.error('Failed to send command', err);
@@ -92,6 +147,7 @@
 		<input
 			type="text"
 			bind:value={command}
+			onkeydown={handleKeydown}
 			placeholder={$serverStatus === 'Running' ? 'Enter server command...' : 'Server is offline...'}
 			disabled={$serverStatus !== 'Running'}
 			class="flex-grow bg-transparent text-vapor-cyan placeholder-gray-600 outline-none font-mono disabled:opacity-50 disabled:cursor-not-allowed uppercase"
