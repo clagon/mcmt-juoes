@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { connectWebSocket, serverStatus } from '$lib/store';
+	import { connectWebSocket } from '$lib/store';
 
 	onMount(() => {
 		connectWebSocket();
@@ -11,7 +11,7 @@
 </script>
 
 <div
-	class="min-h-screen bg-vapor-bg text-vapor-cyan font-sans relative overflow-hidden flex flex-col items-center py-10 px-4"
+	class="min-h-screen bg-vapor-bg text-vapor-cyan font-sans relative overflow-hidden flex flex-col items-center py-6 px-4"
 >
 	<!-- Background grid -->
 	<div
@@ -19,28 +19,16 @@
 		style="background-image: linear-gradient(var(--color-vapor-pink) 1px, transparent 1px), linear-gradient(90deg, var(--color-vapor-pink) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px);"
 	></div>
 
-	<header class="mb-10 text-center relative z-10 w-full">
-		<h1
-			class="text-4xl md:text-6xl font-black text-vapor-pink glow-pink tracking-widest uppercase italic border-b-4 border-vapor-purple pb-2 inline-block"
-		>
-			Server Manager
-		</h1>
-		<div class="flex items-center justify-center mt-4 gap-4">
-			<span class="text-vapor-cyan glow-cyan tracking-widest text-lg font-mono">STATUS:</span>
-			<span
-				class="px-4 py-1 border-2 font-bold tracking-widest uppercase
-				{$serverStatus === 'Running'
-					? 'text-green-400 border-green-400'
-					: $serverStatus === 'Starting'
-						? 'text-yellow-400 border-yellow-400'
-						: 'text-red-400 border-red-400'}"
-			>
-				{$serverStatus}
-			</span>
-		</div>
-	</header>
+	<!-- Top Bar Container (Header + Controls will fit within layout flow or inside page)
+         In the current architecture, +layout provides the frame.
+         We'll move the header content entirely into +page.svelte to make the top bar
+         a single cohesive unit with the Controls.
+         Wait, let's keep the global status here but styled differently, or better yet,
+         move all header UI into +page.svelte so Controls and Header are siblings in a flex container.
+         For now, let's render children without a large global header,
+         and let +page.svelte handle the top bar. -->
 
-	<main class="w-full max-w-6xl flex-grow z-10">
+	<main class="w-full max-w-6xl flex-grow z-10 flex flex-col gap-6">
 		{@render children()}
 	</main>
 </div>
