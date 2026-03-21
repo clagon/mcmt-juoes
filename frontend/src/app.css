@@ -1,1 +1,44 @@
 @import 'tailwindcss';
+
+@theme {
+	--color-vapor-pink: #ff71ce;
+	--color-vapor-cyan: #01cdfe;
+	--color-vapor-purple: #b967ff;
+	--color-vapor-bg: #120c18;
+}
+
+body {
+	background-color: var(--color-vapor-bg);
+	color: var(--color-vapor-cyan);
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	min-height: 100vh;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.glow-pink {
+	text-shadow:
+		0 0 5px var(--color-vapor-pink),
+		0 0 10px var(--color-vapor-pink);
+}
+
+.glow-cyan {
+	text-shadow:
+		0 0 5px var(--color-vapor-cyan),
+		0 0 10px var(--color-vapor-cyan);
+}
+
+.border-glow-pink {
+	box-shadow:
+		0 0 5px var(--color-vapor-pink),
+		inset 0 0 5px var(--color-vapor-pink);
+	border-color: var(--color-vapor-pink);
+}
+
+.border-glow-cyan {
+	box-shadow:
+		0 0 5px var(--color-vapor-cyan),
+		inset 0 0 5px var(--color-vapor-cyan);
+	border-color: var(--color-vapor-cyan);
+}
